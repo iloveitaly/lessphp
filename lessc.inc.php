@@ -32,7 +32,7 @@
  *    - compiling: lessc::compileBlock()
  *
  */
-class lessc {
+class Less_Core {
 	protected $buffer;
 	protected $count;
 	protected $line;
@@ -1740,7 +1740,9 @@ class lessc {
 		if ($this->peek("(.*?)(\n|$)", $m))
 			throw new exception($msg.': failed at `'.$m[1].'` '.$loc);
 	}
-
+	
+	public static function factory($fname = NULL) { return new Less($fname); }
+	
 	/**
 	 * Initialize any static state, can initialize parser for a file
 	 */
@@ -1752,19 +1754,16 @@ class lessc {
 		}
 
 		if ($fname) {
-			if (!is_file($fname)) {
-				throw new Exception('load error: failed to find '.$fname);
-			}
-			$pi = pathinfo($fname);
-
-			$this->fileName = $fname;
+			$filePath = Kohana::find_file('views', $fname);
+			$pi = pathinfo($filePath);
+			$this->fileName = $filePath;
 			$this->importDir = $pi['dirname'].'/';
-			$this->buffer = file_get_contents($fname);
+			$this->buffer = file_get_contents($filePath);
 
-			$this->addParsedFile($fname);
+			$this->addParsedFile($filePath);
 		}
 	}
-
+	
 	// remove comments from $text
 	// todo: make it work for all functions, not just url
 	function removeComments($text) {
