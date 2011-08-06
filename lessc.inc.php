@@ -1706,8 +1706,18 @@ class lessc {
 		}
 	}
 	
+	function compress($data) {
+		$data = preg_replace('~/\*[^*]*\*+([^/][^*]*\*+)*/~', '', $data);
+		$data = preg_replace('~\s+~', ' ', $data);
+		$data = preg_replace('~ *+([{}+>:;,]) *~', '$1', trim($data));
+		$data = str_replace(';}', '}', $data);
+		$data = preg_replace('~[^{}]++\{\}~', '', $data);
+
+		return $data;
+	}
+	
 	// parse and compile buffer
-	function parse($str = null, $initial_variables = null) {
+	function parse($str = null, $initial_variables = null, $compress = false) {
 		$locale = setlocale(LC_NUMERIC, 0);
 		setlocale(LC_NUMERIC, "C");
 		$root = $this->parseTree($str);
@@ -1715,7 +1725,7 @@ class lessc {
 		if ($initial_variables) $this->injectVariables($initial_variables);
 		$out = $this->compileBlock($root);
 		setlocale(LC_NUMERIC, $locale);
-		return $out;
+		return $compress ? $this->compress($out) : $out;
 	}
 
 	function throwParseError($msg = 'parse error') {
