@@ -1668,7 +1668,7 @@ class Less_Core {
 
 	// create a child parser (for compiling an import)
 	protected function createChild($fname) {
-		$less = new lessc($fname);
+		$less = new Less_Core($fname);
 		$less->importDir = $this->importDir;
 		$less->indentChar = $this->indentChar;
 		$less->compat = $this->compat;
@@ -1693,7 +1693,7 @@ class Less_Core {
 	// inject array of unparsed strings into environment as variables
 	protected function injectVariables($args) {
 		$this->pushEnv();
-		$parser = new lessc();
+		$parser = new Less_Core();
 		foreach ($args as $name => $str_value) {
 			if ($name{0} != '@') $name = '@'.$name;
 			$parser->count = 0;
@@ -1821,7 +1821,7 @@ class Less_Core {
 	// returns true when it compiles, false otherwise
 	public static function ccompile($in, $out) {
 		if (!is_file($out) || filemtime($in) > filemtime($out)) {
-			$less = new lessc($in);
+			$less = new Less_Core($in);
 			file_put_contents($out, $less->parse());
 			return true;
 		}
@@ -1880,7 +1880,7 @@ class Less_Core {
 
 		if ($root !== null) {
 			// If we have a root value which means we should rebuild.
-			$less = new lessc($root);
+			$less = new Less_Core($root);
 			$out = array();
 			$out['root'] = $root;
 			$out['compiled'] = $less->parse();
